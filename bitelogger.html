@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bite Logger — CaptainOS</title>
+<meta name="description" content="Log your catch. We handle the conditions automatically.">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #0a1628; --deep: #060e1c; --ocean: #0d2444; --tide: #1a4a7a;
+  --water: #2d7dd2; --foam: #a8d4f5; --rust: #c4622d; --sand: #d4a96a;
+  --off-white: #f2ede6; --muted: #8a9bb0; --teal: #1D9E75; --teal-dark: #0F6E56;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--navy); color: var(--off-white); font-family: 'Crimson Pro', Georgia, serif; font-weight: 300; min-height: 100vh; }
+
+nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: rgba(10,22,40,0.97); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(45,125,210,0.15); }
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.12em; color: var(--off-white); text-decoration: none; }
+.nav-logo span { color: var(--water); }
+.nav-back { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.nav-back:hover { color: var(--off-white); }
+
+.app-wrap { max-width: 680px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+.app-header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(45,125,210,0.12); }
+.app-title { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 0.06em; }
+.app-title span { color: var(--teal); }
+.app-sub { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-top: 0.4rem; }
+
+.tabs { display: flex; gap: 2px; margin-bottom: 1.5rem; }
+.tab { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.65rem 1rem; background: var(--ocean); color: var(--muted); border: none; cursor: pointer; transition: all 0.2s; flex: 1; }
+.tab.active { background: var(--teal); color: white; }
+.tab:hover:not(.active) { background: var(--tide); color: var(--off-white); }
+
+.panel { display: none; }
+.panel.active { display: block; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* LOG FORM */
+.log-card { background: var(--ocean); border: 1px solid rgba(45,125,210,0.12); padding: 1.5rem; margin-bottom: 1rem; }
+.log-card-title { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--teal); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+.log-card-title::after { content: ''; flex: 1; height: 1px; background: rgba(29,158,117,0.15); }
+
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.field label { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 5px; }
+.field input, .field select {
+  width: 100%; background: var(--deep); border: 1px solid rgba(45,125,210,0.18);
+  color: var(--off-white); font-family: 'DM Mono', monospace; font-size: 0.75rem;
+  padding: 0.65rem 0.85rem; outline: none; transition: border-color 0.2s;
+}
+.field input:focus, .field select:focus { border-color: var(--teal); }
+.field select option { background: var(--deep); }
+
+/* CONDITIONS PANEL */
+.conditions-panel { background: var(--deep); border: 1px solid rgba(29,158,117,0.15); padding: 1.25rem; margin-bottom: 1rem; position: relative; overflow: hidden; }
+.conditions-panel::before { content: 'AUTO-FETCHED CONDITIONS'; position: absolute; top: 0; left: 0; right: 0; font-family: 'DM Mono', monospace; font-size: 0.52rem; letter-spacing: 0.2em; color: var(--teal); background: rgba(29,158,117,0.08); padding: 0.3rem 1rem; border-bottom: 1px solid rgba(29,158,117,0.12); text-align: center; }
+.conditions-panel { padding-top: 2.5rem; }
+.conditions-loading { text-align: center; padding: 1.5rem 0; }
+.loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(29,158,117,0.2); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 0.5rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.conditions-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cond-item { background: var(--ocean); padding: 0.75rem; text-align: center; border: 1px solid rgba(45,125,210,0.08); }
+.cond-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.04em; color: var(--off-white); line-height: 1; }
+.cond-unit { font-family: 'DM Mono', monospace; font-size: 0.5rem; letter-spacing: 0.1em; color: var(--teal); text-transform: uppercase; }
+.cond-lbl { font-family: 'DM Mono', monospace; font-size: 0.52rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+.conditions-idle { text-align: center; padding: 1.5rem 0; }
+.conditions-idle p { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(138,155,176,0.3); }
+
+/* CATCH */
+.catch-header { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 6px; }
+.catch-header span { font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(138,155,176,0.4); }
+.catch-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 7px; align-items: center; }
+.catch-row input { background: var(--deep); border: 1px solid rgba(45,125,210,0.18); color: var(--off-white); font-family: 'DM Mono', monospace; font-size: 0.75rem; padding: 0.6rem 0.8rem; outline: none; width: 100%; transition: border-color 0.2s; }
+.catch-row input:focus { border-color: var(--teal); }
+.add-catch { width: 100%; background: transparent; border: 1px dashed rgba(29,158,117,0.25); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.65rem; cursor: pointer; transition: all 0.2s; margin-top: 4px; }
+.add-catch:hover { border-color: var(--teal); color: var(--teal); }
+.remove-catch { background: transparent; border: none; color: rgba(138,155,176,0.3); font-size: 1.1rem; cursor: pointer; padding: 0 6px; transition: color 0.2s; }
+.remove-catch:hover { color: #f09595; }
+
+.notes-field { width: 100%; background: var(--deep); border: 1px solid rgba(45,125,210,0.18); color: var(--off-white); font-family: 'Crimson Pro', serif; font-size: 1rem; line-height: 1.5; padding: 0.75rem 0.9rem; outline: none; resize: vertical; transition: border-color 0.2s; }
+.notes-field:focus { border-color: var(--teal); }
+.notes-field::placeholder { color: rgba(138,155,176,0.3); font-style: italic; }
+
+.save-btn { width: 100%; background: var(--teal); border: none; color: white; font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; padding: 1rem; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; }
+.save-btn:hover { background: var(--teal-dark); }
+.save-btn:disabled { background: rgba(29,158,117,0.3); cursor: not-allowed; }
+.privacy-note { font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(138,155,176,0.25); text-align: center; margin-top: 1rem; }
+
+/* HISTORY */
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1.5rem; }
+.metric { background: var(--ocean); padding: 1rem; border: 1px solid rgba(45,125,210,0.08); }
+.metric-val { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.04em; color: var(--teal); line-height: 1; }
+.metric-lbl { font-family: 'DM Mono', monospace; font-size: 0.52rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+
+.trip-card { background: var(--ocean); border: 1px solid rgba(45,125,210,0.08); padding: 1.25rem; margin-bottom: 8px; transition: border-color 0.2s; }
+.trip-card:hover { border-color: rgba(29,158,117,0.2); }
+.trip-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.trip-date { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--off-white); }
+.trip-area { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.08em; color: var(--muted); margin-top: 3px; }
+.trip-count { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--teal); letter-spacing: 0.04em; line-height: 1; text-align: right; }
+.trip-count-lbl { font-family: 'DM Mono', monospace; font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.trip-conditions-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.cond-badge { font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.06em; color: var(--muted); background: var(--deep); border: 1px solid rgba(45,125,210,0.1); padding: 2px 8px; }
+.trip-fish { display: flex; flex-wrap: wrap; gap: 6px; }
+.fish-tag { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.06em; color: var(--sand); background: rgba(212,169,106,0.08); border: 1px solid rgba(212,169,106,0.18); padding: 3px 8px; }
+.trip-note { font-size: 0.88rem; color: var(--muted); font-style: italic; margin-top: 8px; border-top: 1px solid rgba(45,125,210,0.08); padding-top: 8px; }
+
+/* INSIGHTS */
+.insight-card { background: var(--ocean); border: 1px solid rgba(45,125,210,0.08); padding: 1.5rem; margin-bottom: 1rem; }
+.insight-title { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); margin-bottom: 1rem; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+.bar-label { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.06em; color: var(--muted); width: 100px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { flex: 1; background: rgba(45,125,210,0.08); height: 5px; }
+.bar-fill { height: 5px; background: var(--teal); transition: width 0.6s ease; }
+.bar-val { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--off-white); width: 28px; text-align: right; }
+.insight-stat { font-size: 1rem; color: var(--foam); line-height: 1.6; }
+.insight-stat strong { color: var(--sand); }
+.insight-note { font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(138,155,176,0.25); text-align: center; padding: 1rem 0 0; }
+
+.empty { text-align: center; padding: 4rem 1rem; }
+.empty-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.3; }
+.empty-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.06em; color: rgba(138,155,176,0.3); }
+.empty-sub { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(138,155,176,0.2); margin-top: 0.5rem; }
+
+.toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--teal-dark); color: white; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.75rem 1.5rem; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
+.toast.show { opacity: 1; }
+
+@media (max-width: 560px) {
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .row2 { grid-template-columns: 1fr; }
+  .conditions-grid { grid-template-columns: repeat(2, 1fr); }
+  nav { padding: 0.75rem 1rem; }
+  .app-wrap { padding: 1.5rem 1rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+      <svg viewBox="0 0 28 28" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+        <line x1="14" y1="1" x2="14" y2="27" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="1" y1="14" x2="27" y2="14" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="5" y1="5" x2="23" y2="23" stroke="#2d7dd2" stroke-width="0.75" stroke-linecap="round" opacity="0.4"/>
+        <line x1="23" y1="5" x2="5" y2="23" stroke="#2d7dd2" stroke-width="0.75" stroke-linecap="round" opacity="0.4"/>
+        <polygon points="14,1 11,9 14,7 17,9" fill="#2d7dd2"/>
+        <polygon points="14,27 11,19 14,21 17,19" fill="#4a6a8a"/>
+        <polygon points="1,14 9,11 7,14 9,17" fill="#4a6a8a"/>
+        <polygon points="27,14 19,11 21,14 19,17" fill="#4a6a8a"/>
+        <circle cx="14" cy="14" r="3" fill="none" stroke="#2d7dd2" stroke-width="1.5"/>
+        <circle cx="14" cy="14" r="1.2" fill="#2d7dd2"/>
+      </svg>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.12em;color:#f2ede6;">CAPTAIN<span style="color:#2d7dd2;">OS</span></span>
+    </a>
+  <span style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--teal);">Bite Logger · Module 01</span>
+  <a class="nav-back" href="index.html">← Back</a>
+</nav>
+
+<div class="app-wrap">
+  <div class="app-header">
+    <h1 class="app-title">BITE <span>LOGGER</span></h1>
+    <p class="app-sub">Date + location + catch — we handle the rest automatically</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('log', this)">Log a Trip</button>
+    <button class="tab" onclick="showTab('history', this)">History</button>
+    <button class="tab" onclick="showTab('insights', this)">Bite Insights</button>
+  </div>
+
+  <!-- LOG -->
+  <div id="panel-log" class="panel active">
+
+    <div class="log-card">
+      <p class="log-card-title">When & Where</p>
+      <div class="row2">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="f-date" onchange="fetchConditions()" />
+        </div>
+        <div class="field">
+          <label>Fishing area</label>
+          <select id="f-area" onchange="fetchConditions()">
+            <option value="">Select area...</option>
+            <optgroup label="Southwest Florida">
+              <option value="chokoloskee" data-lat="25.8317" data-lon="-81.3676" data-noaa="8725110">Chokoloskee / Ten Thousand Islands</option>
+              <option value="naples" data-lat="26.1420" data-lon="-81.7948" data-noaa="8725110">Naples</option>
+              <option value="marco" data-lat="25.9412" data-lon="-81.7229" data-noaa="8725110">Marco Island</option>
+              <option value="everglades" data-lat="25.4687" data-lon="-81.0776" data-noaa="8723970">Everglades City</option>
+              <option value="fortmyers" data-lat="26.6406" data-lon="-81.8723" data-noaa="8725520">Fort Myers / Cape Coral</option>
+              <option value="charlotte" data-lat="26.9342" data-lon="-82.0754" data-noaa="8725763">Charlotte Harbor</option>
+            </optgroup>
+            <optgroup label="Northwest Florida">
+              <option value="tampa" data-lat="27.9506" data-lon="-82.4572" data-noaa="8726520">Tampa Bay</option>
+              <option value="sarasota" data-lat="27.3364" data-lon="-82.5307" data-noaa="8726384">Sarasota</option>
+              <option value="clearwater" data-lat="27.9658" data-lon="-82.8001" data-noaa="8726724">Clearwater</option>
+            </optgroup>
+            <optgroup label="Southeast Florida">
+              <option value="miami" data-lat="25.7617" data-lon="-80.1918" data-noaa="8723214">Miami / Biscayne Bay</option>
+              <option value="islamorada" data-lat="24.9274" data-lon="-80.6490" data-noaa="8723970">Islamorada</option>
+              <option value="keywest" data-lat="24.5551" data-lon="-81.7800" data-noaa="8724580">Key West</option>
+            </optgroup>
+            <optgroup label="Northeast Florida">
+              <option value="jacksonville" data-lat="30.3322" data-lon="-81.6557" data-noaa="8720218">Jacksonville</option>
+              <option value="staugustine" data-lat="29.8943" data-lon="-81.3145" data-noaa="8720587">St. Augustine</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="conditions-panel" id="conditions-panel">
+      <div class="conditions-idle" id="cond-idle">
+        <p>Select a date and area to auto-load conditions</p>
+      </div>
+      <div class="conditions-loading" id="cond-loading" style="display:none;">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Fetching conditions...</p>
+      </div>
+      <div id="cond-data" style="display:none;">
+        <div class="conditions-grid" id="cond-grid"></div>
+      </div>
+    </div>
+
+    <div class="log-card">
+      <p class="log-card-title">Catch</p>
+      <div class="catch-header">
+        <span>Species</span><span>Count</span><span>Avg size (in)</span><span></span>
+      </div>
+      <div id="catch-list"></div>
+      <button class="add-catch" onclick="addCatch()">+ Add species</button>
+    </div>
+
+    <div class="log-card">
+      <p class="log-card-title">Notes</p>
+      <textarea class="notes-field" id="f-notes" rows="3" placeholder="Bait used, hotspots, anything worth remembering..."></textarea>
+    </div>
+
+    <button class="save-btn" id="save-btn" onclick="saveTrip()">Save Trip</button>
+    <p class="privacy-note">All data stays private on your device — never uploaded to any server</p>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="panel-history" class="panel">
+    <div class="metrics" id="metrics"></div>
+    <div id="history-list"></div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div id="panel-insights" class="panel">
+    <div id="insights-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Trip saved ✓</div>
+
+<script>
+let trips = JSON.parse(localStorage.getItem('cos_trips_v2') || '[]');
+let currentConditions = null;
+
+function showTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'history') renderHistory();
+  if (name === 'insights') renderInsights();
+}
+
+function addCatch(s='', c='', z='') {
+  const div = document.createElement('div');
+  div.className = 'catch-row';
+  div.innerHTML = `
+    <input type="text" placeholder="e.g. Snook" value="${s}" />
+    <input type="number" placeholder="0" value="${c}" min="0" />
+    <input type="number" placeholder="—" value="${z}" min="0" step="0.5" />
+    <button class="remove-catch" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('catch-list').appendChild(div);
+}
+
+// Moon phase calculation
+function getMoonPhase(date) {
+  const d = new Date(date);
+  const year = d.getFullYear(), month = d.getMonth() + 1, day = d.getDate();
+  let jd = 367 * year - Math.floor(7 * (year + Math.floor((month + 9) / 12)) / 4) + Math.floor(275 * month / 9) + day + 1721013.5;
+  const cycle = 29.53058867;
+  const phase = ((jd - 2451550.1) % cycle + cycle) % cycle;
+  const pct = phase / cycle;
+  let name, emoji;
+  if (pct < 0.03 || pct > 0.97) { name = 'New Moon'; emoji = '🌑'; }
+  else if (pct < 0.22) { name = 'Waxing Crescent'; emoji = '🌒'; }
+  else if (pct < 0.28) { name = 'First Quarter'; emoji = '🌓'; }
+  else if (pct < 0.47) { name = 'Waxing Gibbous'; emoji = '🌔'; }
+  else if (pct < 0.53) { name = 'Full Moon'; emoji = '🌕'; }
+  else if (pct < 0.72) { name = 'Waning Gibbous'; emoji = '🌖'; }
+  else if (pct < 0.78) { name = 'Last Quarter'; emoji = '🌗'; }
+  else { name = 'Waning Crescent'; emoji = '🌘'; }
+  return { name, emoji, phase: Math.round(pct * 100) };
+}
+
+// Tide stage from NOAA
+async function getTide(noaaStation, date) {
+  try {
+    const d = date.replace(/-/g, '');
+    const url = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&application=captainos&begin_date=${d}&end_date=${d}&datum=MLLW&station=${noaaStation}&time_zone=lst_ldt&interval=hilo&units=english&format=json`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.predictions || !data.predictions.length) return null;
+    const now = new Date();
+    const preds = data.predictions.map(p => ({ time: new Date(date + ' ' + p.t.split(' ')[1]), type: p.type, v: parseFloat(p.v) }));
+    preds.sort((a, b) => Math.abs(a.time - now) - Math.abs(b.time - now));
+    const nearest = preds[0];
+    const next = preds[1];
+    if (!nearest || !next) return 'Checking tides';
+    const timeDiff = (next.time - nearest.time) / 1000 / 60;
+    let stage;
+    if (nearest.type === 'H') stage = 'Outgoing High';
+    else if (nearest.type === 'L') stage = 'Incoming Low';
+    else if (next.type === 'H') stage = 'Incoming Mid';
+    else stage = 'Outgoing Mid';
+    return stage;
+  } catch (e) { return null; }
+}
+
+// Weather from Open-Meteo (free, no key)
+async function getWeather(lat, lon, date) {
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,windspeed_10m_max,winddirection_10m_dominant,precipitation_sum&hourly=pressure_msl,cloudcover,apparent_temperature,relativehumidity_2m&timezone=America/New_York&start_date=${date}&end_date=${date}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.daily) return null;
+    const pressure = data.hourly?.pressure_msl ? (data.hourly.pressure_msl[6] * 0.02953).toFixed(2) : null;
+    const windSpeed = data.daily.windspeed_10m_max?.[0] ? Math.round(data.daily.windspeed_10m_max[0] * 0.621371) : null;
+    const windDeg = data.daily.winddirection_10m_dominant?.[0];
+    const cloudcover = data.hourly?.cloudcover ? Math.round(data.hourly.cloudcover.slice(6, 18).reduce((a, b) => a + b, 0) / 12) : null;
+    const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+    const windDir = windDeg != null ? dirs[Math.round(windDeg / 45) % 8] : null;
+    let sky = 'Clear';
+    if (cloudcover > 75) sky = 'Overcast';
+    else if (cloudcover > 50) sky = 'Mostly Cloudy';
+    else if (cloudcover > 25) sky = 'Partly Cloudy';
+    return { pressure, windSpeed, windDir, sky, cloudcover };
+  } catch (e) { return null; }
+}
+
+async function fetchConditions() {
+  const dateVal = document.getElementById('f-date').value;
+  const areaSelect = document.getElementById('f-area');
+  const selected = areaSelect.options[areaSelect.selectedIndex];
+  if (!dateVal || !selected.value) return;
+
+  const lat = parseFloat(selected.getAttribute('data-lat'));
+  const lon = parseFloat(selected.getAttribute('data-lon'));
+  const noaa = selected.getAttribute('data-noaa');
+
+  document.getElementById('cond-idle').style.display = 'none';
+  document.getElementById('cond-loading').style.display = 'block';
+  document.getElementById('cond-data').style.display = 'none';
+
+  const moon = getMoonPhase(dateVal);
+  const [weather, tide] = await Promise.all([
+    getWeather(lat, lon, dateVal),
+    getTide(noaa, dateVal)
+  ]);
+
+  currentConditions = { moon: moon.name, moonEmoji: moon.emoji, tide: tide || 'N/A', weather };
+
+  const grid = document.getElementById('cond-grid');
+  grid.innerHTML = `
+    <div class="cond-item">
+      <div class="cond-val">${moon.emoji}</div>
+      <div class="cond-unit">Moon</div>
+      <div class="cond-lbl">${moon.name}</div>
+    </div>
+    <div class="cond-item">
+      <div class="cond-val" style="font-size:1rem;padding-top:0.2rem;">${tide || '—'}</div>
+      <div class="cond-unit">Tide</div>
+      <div class="cond-lbl">NOAA Data</div>
+    </div>
+    <div class="cond-item">
+      <div class="cond-val">${weather?.pressure || '—'}</div>
+      <div class="cond-unit">inHg</div>
+      <div class="cond-lbl">Pressure</div>
+    </div>
+    <div class="cond-item">
+      <div class="cond-val">${weather?.windSpeed || '—'}</div>
+      <div class="cond-unit">${weather?.windDir || ''} mph</div>
+      <div class="cond-lbl">Wind</div>
+    </div>
+    <div class="cond-item" style="grid-column: span 2">
+      <div class="cond-val" style="font-size:1rem;padding-top:0.2rem;">${weather?.sky || '—'}</div>
+      <div class="cond-unit">Sky</div>
+      <div class="cond-lbl">Cloud Cover</div>
+    </div>
+    <div class="cond-item" style="grid-column: span 2">
+      <div class="cond-val" style="font-size:0.85rem;padding-top:0.15rem;color:var(--teal);">Auto-logged ✓</div>
+      <div class="cond-unit">All conditions</div>
+      <div class="cond-lbl">Saved with trip</div>
+    </div>
+  `;
+
+  document.getElementById('cond-loading').style.display = 'none';
+  document.getElementById('cond-data').style.display = 'block';
+}
+
+function saveTrip() {
+  const dateVal = document.getElementById('f-date').value;
+  const areaSelect = document.getElementById('f-area');
+  const areaText = areaSelect.options[areaSelect.selectedIndex]?.text || '';
+
+  const fish = [];
+  document.querySelectorAll('.catch-row').forEach(r => {
+    const inputs = r.querySelectorAll('input');
+    if (inputs[0].value.trim()) {
+      fish.push({ species: inputs[0].value.trim(), count: parseInt(inputs[1].value) || 0, size: parseFloat(inputs[2].value) || 0 });
+    }
+  });
+
+  const trip = {
+    id: Date.now(),
+    date: dateVal,
+    area: areaText,
+    areaKey: areaSelect.value,
+    fish,
+    notes: document.getElementById('f-notes').value,
+    total: fish.reduce((a, f) => a + f.count, 0),
+    conditions: currentConditions || null
+  };
+
+  trips.unshift(trip);
+  localStorage.setItem('cos_trips_v2', JSON.stringify(trips));
+
+  document.getElementById('f-date').value = '';
+  document.getElementById('f-area').value = '';
+  document.getElementById('f-notes').value = '';
+  document.getElementById('catch-list').innerHTML = '';
+  document.getElementById('cond-idle').style.display = 'block';
+  document.getElementById('cond-data').style.display = 'none';
+  currentConditions = null;
+  addCatch();
+
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function renderHistory() {
+  const me = document.getElementById('metrics');
+  const el = document.getElementById('history-list');
+  if (!trips.length) {
+    me.innerHTML = '';
+    el.innerHTML = '<div class="empty"><div class="empty-icon">🎣</div><p class="empty-title">No Trips Yet</p><p class="empty-sub">Log your first trip to start building your data</p></div>';
+    return;
+  }
+  const totalFish = trips.reduce((a, t) => a + t.total, 0);
+  const allSp = {};
+  trips.forEach(t => t.fish.forEach(f => { allSp[f.species] = (allSp[f.species] || 0) + f.count; }));
+  const top = Object.entries(allSp).sort((a, b) => b[1] - a[1])[0];
+  me.innerHTML = `
+    <div class="metric"><div class="metric-val">${trips.length}</div><div class="metric-lbl">Trips logged</div></div>
+    <div class="metric"><div class="metric-val">${totalFish}</div><div class="metric-lbl">Total fish</div></div>
+    <div class="metric"><div class="metric-val">${(totalFish / trips.length).toFixed(1)}</div><div class="metric-lbl">Avg / trip</div></div>
+    <div class="metric"><div class="metric-val" style="font-size:1rem;padding-top:0.3rem;">${top ? top[0] : '—'}</div><div class="metric-lbl">Top species</div></div>
+  `;
+  el.innerHTML = trips.map(t => `
+    <div class="trip-card">
+      <div class="trip-top">
+        <div>
+          <div class="trip-date">${t.date ? new Date(t.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }) : 'Date not set'}</div>
+          <div class="trip-area">${t.area || ''}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="trip-count">${t.total}</div>
+          <div class="trip-count-lbl">fish</div>
+        </div>
+      </div>
+      ${t.conditions ? `<div class="trip-conditions-row">
+        ${t.conditions.moonEmoji ? `<span class="cond-badge">${t.conditions.moonEmoji} ${t.conditions.moon}</span>` : ''}
+        ${t.conditions.tide ? `<span class="cond-badge">🌊 ${t.conditions.tide}</span>` : ''}
+        ${t.conditions.weather?.pressure ? `<span class="cond-badge">📊 ${t.conditions.weather.pressure} inHg</span>` : ''}
+        ${t.conditions.weather?.windSpeed ? `<span class="cond-badge">💨 ${t.conditions.weather.windSpeed} mph ${t.conditions.weather.windDir || ''}</span>` : ''}
+        ${t.conditions.weather?.sky ? `<span class="cond-badge">☁ ${t.conditions.weather.sky}</span>` : ''}
+      </div>` : ''}
+      <div class="trip-fish">${t.fish.map(f => `<span class="fish-tag">${f.count}× ${f.species}${f.size ? ' · ' + f.size + '"' : ''}</span>`).join('')}</div>
+      ${t.notes ? `<p class="trip-note">${t.notes}</p>` : ''}
+    </div>
+  `).join('');
+}
+
+function topN(arr, n = 3) {
+  const c = {};
+  arr.forEach(v => { if (v) c[v] = (c[v] || 0) + 1; });
+  return Object.entries(c).sort((a, b) => b[1] - a[1]).slice(0, n);
+}
+
+function renderInsights() {
+  const el = document.getElementById('insights-content');
+  if (trips.length < 3) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><p class="empty-title">Keep Logging</p><p class="empty-sub">Log at least 3 trips to unlock bite pattern insights</p></div>';
+    return;
+  }
+  const best = [...trips].sort((a, b) => b.total - a.total).slice(0, Math.max(1, Math.floor(trips.length * 0.33)));
+  const tideMap = {};
+  trips.forEach(t => {
+    const tide = t.conditions?.tide;
+    if (tide && tide !== 'N/A') {
+      if (!tideMap[tide]) tideMap[tide] = { total: 0, fish: 0 };
+      tideMap[tide].total++;
+      tideMap[tide].fish += t.total;
+    }
+  });
+  const tideAvgs = Object.entries(tideMap).map(([k, v]) => ({ label: k, avg: v.total > 0 ? v.fish / v.total : 0 })).sort((a, b) => b.avg - a.avg);
+  const maxAvg = tideAvgs[0]?.avg || 1;
+  const moonTop = topN(best.map(t => t.conditions?.moon).filter(Boolean));
+  const pressures = best.filter(t => t.conditions?.weather?.pressure).map(t => parseFloat(t.conditions.weather.pressure));
+  const avgP = pressures.length ? (pressures.reduce((a, b) => a + b, 0) / pressures.length).toFixed(2) : null;
+  const skyTop = topN(best.map(t => t.conditions?.weather?.sky).filter(Boolean));
+
+  el.innerHTML = `
+    ${tideAvgs.length ? `<div class="insight-card">
+      <p class="insight-title">Best tide stages</p>
+      ${tideAvgs.slice(0, 5).map(t => `
+        <div class="bar-row">
+          <div class="bar-label">${t.label}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round((t.avg / maxAvg) * 100)}%"></div></div>
+          <div class="bar-val">${t.avg.toFixed(1)}</div>
+        </div>`).join('')}
+      <p style="font-family:'DM Mono',monospace;font-size:0.52rem;color:rgba(138,155,176,0.3);text-transform:uppercase;letter-spacing:0.1em;margin-top:6px;">avg fish per trip</p>
+    </div>` : ''}
+
+    ${moonTop.length ? `<div class="insight-card">
+      <p class="insight-title">Moon phase patterns</p>
+      <p class="insight-stat">Your best trips happen during: <strong>${moonTop.map(([k]) => k).join(', ')}</strong></p>
+    </div>` : ''}
+
+    ${avgP ? `<div class="insight-card">
+      <p class="insight-title">Barometric sweet spot</p>
+      <p class="insight-stat">Your best catches happen around <strong>${avgP} inHg</strong>. Watch for dropping pressure before fronts — they often trigger a bite.</p>
+    </div>` : ''}
+
+    ${skyTop.length ? `<div class="insight-card">
+      <p class="insight-title">Sky conditions</p>
+      <p class="insight-stat">Your best days tend to be <strong>${skyTop[0][0]}</strong> skies.</p>
+    </div>` : ''}
+
+    <p class="insight-note">Based on ${trips.length} trips · All data private on your device</p>
+  `;
+}
+
+addCatch();
+document.getElementById('f-date').valueAsDate = new Date();
+</script>
+</body>
+</html>

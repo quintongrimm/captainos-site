@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dock Desk Setup — CaptainOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #0a1628; --deep: #060e1c; --ocean: #0d2444; --tide: #1a4a7a;
+  --water: #2d7dd2; --foam: #a8d4f5; --rust: #c4622d; --sand: #d4a96a;
+  --off-white: #f2ede6; --muted: #8a9bb0; --teal: #1D9E75; --teal-dark: #0F6E56;
+  --success: #1D9E75; --warning: #d4a96a;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--navy); color: var(--off-white); font-family: 'Crimson Pro', Georgia, serif; font-weight: 300; min-height: 100vh; }
+
+nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: rgba(10,22,40,0.97); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(45,125,210,0.15); }
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.12em; color: var(--off-white); text-decoration: none; }
+.nav-logo span { color: var(--water); }
+.nav-back { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-decoration: none; }
+.nav-back:hover { color: var(--off-white); }
+
+.hero { padding: 3rem 2rem 2rem; max-width: 860px; margin: 0 auto; border-bottom: 1px solid rgba(45,125,210,0.1); }
+.hero-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--water); margin-bottom: 0.75rem; }
+.hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.5rem, 6vw, 4.5rem); letter-spacing: 0.06em; line-height: 1; }
+.hero-title span { color: var(--water); }
+.hero-sub { font-size: 1.1rem; color: var(--foam); line-height: 1.6; margin-top: 1rem; max-width: 560px; }
+
+.progress-bar { max-width: 860px; margin: 2rem auto 0; padding: 0 2rem; }
+.steps { display: flex; gap: 2px; }
+.step { flex: 1; height: 3px; background: rgba(45,125,210,0.15); transition: background 0.4s; }
+.step.done { background: var(--teal); }
+.step.active { background: var(--water); }
+.step-labels { display: flex; margin-top: 8px; }
+.step-label { flex: 1; font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(138,155,176,0.4); transition: color 0.3s; }
+.step-label.active { color: var(--water); }
+.step-label.done { color: var(--teal); }
+
+.wrap { max-width: 860px; margin: 0 auto; padding: 2rem; }
+
+.section { display: none; }
+.section.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.section-head { margin-bottom: 1.5rem; }
+.section-num { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--water); margin-bottom: 0.5rem; }
+.section-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.06em; }
+.section-desc { font-size: 1rem; color: var(--foam); margin-top: 0.5rem; line-height: 1.6; }
+
+.card { background: var(--ocean); border: 1px solid rgba(45,125,210,0.15); padding: 1.5rem; margin-bottom: 1rem; }
+.card-title { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.25rem; }
+
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 0; }
+.field label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px; }
+.field input, .field select, .field textarea {
+  width: 100%; background: var(--deep); border: 1px solid rgba(45,125,210,0.2);
+  color: var(--off-white); font-family: 'DM Mono', monospace; font-size: 0.75rem;
+  padding: 0.65rem 0.85rem; outline: none; transition: border-color 0.2s;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--water); }
+.field select option { background: var(--deep); }
+.field textarea { resize: vertical; line-height: 1.5; }
+.field-hint { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.08em; color: rgba(138,155,176,0.5); margin-top: 5px; }
+
+.trip-type { background: var(--deep); border: 1px solid rgba(45,125,210,0.15); padding: 1.25rem; margin-bottom: 8px; position: relative; }
+.trip-type-header { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
+.trip-type-header input { background: var(--ocean); border: 1px solid rgba(45,125,210,0.2); color: var(--off-white); font-family: 'DM Mono', monospace; font-size: 0.75rem; padding: 0.6rem 0.8rem; outline: none; width: 100%; }
+.trip-type-header input:focus { border-color: var(--water); }
+.trip-type-header label { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 5px; }
+.remove-btn { background: transparent; border: 1px solid rgba(240,149,149,0.2); color: rgba(240,149,149,0.5); font-family: 'DM Mono', monospace; font-size: 0.6rem; padding: 0.5rem 0.75rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.remove-btn:hover { border-color: #f09595; color: #f09595; }
+.add-btn { width: 100%; background: transparent; border: 1px dashed rgba(45,125,210,0.2); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.75rem; cursor: pointer; transition: all 0.2s; margin-top: 4px; }
+.add-btn:hover { border-color: var(--water); color: var(--water); }
+
+.faq-item { background: var(--deep); border: 1px solid rgba(45,125,210,0.1); margin-bottom: 8px; }
+.faq-question { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; color: var(--water); padding: 0.85rem 1rem 0.5rem; text-transform: uppercase; }
+.faq-item textarea { width: 100%; background: transparent; border: none; border-top: 1px solid rgba(45,125,210,0.1); color: var(--off-white); font-family: 'Crimson Pro', serif; font-size: 1rem; line-height: 1.5; padding: 0.85rem 1rem; outline: none; resize: vertical; }
+.faq-item textarea::placeholder { color: rgba(138,155,176,0.3); font-style: italic; }
+.faq-custom { background: var(--deep); border: 1px dashed rgba(45,125,210,0.2); margin-bottom: 8px; }
+.faq-custom input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(45,125,210,0.1); color: var(--water); font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.85rem 1rem; outline: none; }
+.faq-custom input::placeholder { color: rgba(45,125,210,0.3); }
+.faq-custom textarea { width: 100%; background: transparent; border: none; color: var(--off-white); font-family: 'Crimson Pro', serif; font-size: 1rem; line-height: 1.5; padding: 0.85rem 1rem; outline: none; resize: vertical; }
+
+.avail-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 1rem; }
+.day-toggle { background: var(--deep); border: 1px solid rgba(45,125,210,0.15); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.6rem 0.3rem; cursor: pointer; text-align: center; transition: all 0.2s; }
+.day-toggle.on { background: rgba(29,158,117,0.15); border-color: var(--teal); color: var(--teal); }
+
+.time-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin-bottom: 12px; }
+.time-sep { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); text-align: center; }
+
+.cal-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.cal-icon.google { background: rgba(66,133,244,0.15); }
+.cal-icon.manual { background: rgba(45,125,210,0.1); }
+.cal-info-title { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--off-white); margin-bottom: 3px; }
+.cal-info-sub { font-size: 0.9rem; color: var(--muted); }
+.cal-badge { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); border: 1px solid rgba(29,158,117,0.3); padding: 2px 8px; flex-shrink: 0; }
+
+.phone-setup { background: var(--deep); border: 1px solid rgba(45,125,210,0.15); padding: 1.5rem; margin-bottom: 1rem; }
+.phone-step { display: flex; gap: 1rem; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid rgba(45,125,210,0.08); }
+.phone-step:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.phone-step-num { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--water); line-height: 1; flex-shrink: 0; width: 32px; }
+.phone-step-content { flex: 1; }
+.phone-step-title { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--off-white); margin-bottom: 4px; }
+.phone-step-desc { font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
+.phone-step-desc code { font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--sand); background: rgba(212,169,106,0.1); padding: 1px 6px; }
+
+.preview-box { background: var(--deep); border: 1px solid rgba(45,125,210,0.15); padding: 1.5rem; margin-bottom: 1rem; }
+.preview-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--water); margin-bottom: 1rem; }
+.chat-bubble { max-width: 85%; margin-bottom: 10px; }
+.chat-bubble.agent { background: var(--ocean); border: 1px solid rgba(45,125,210,0.2); padding: 0.85rem 1rem; font-size: 0.95rem; color: var(--off-white); line-height: 1.5; }
+.chat-bubble.client { background: rgba(29,158,117,0.1); border: 1px solid rgba(29,158,117,0.2); padding: 0.85rem 1rem; font-size: 0.95rem; color: var(--foam); line-height: 1.5; margin-left: auto; }
+.chat-name { font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+
+.sms-preview { background: #1a1a1a; border-radius: 12px; padding: 1.25rem; margin-top: 1rem; }
+.sms-header { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(138,155,176,0.4); margin-bottom: 0.75rem; }
+.sms-bubble { background: #2a2a2a; border-radius: 12px; padding: 0.85rem 1rem; font-family: -apple-system, sans-serif; font-size: 0.9rem; color: #e0e0e0; line-height: 1.5; }
+
+.nav-buttons { display: flex; gap: 12px; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(45,125,210,0.1); }
+.btn-next { flex: 1; background: var(--water); border: none; color: var(--navy); font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 1rem; cursor: pointer; transition: background 0.2s; }
+.btn-next:hover { background: var(--foam); }
+.btn-back { background: transparent; border: 1px solid rgba(45,125,210,0.2); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 1rem 1.5rem; cursor: pointer; transition: all 0.2s; }
+.btn-back:hover { border-color: var(--off-white); color: var(--off-white); }
+.btn-save { flex: 1; background: var(--teal); border: none; color: white; font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 1rem; cursor: pointer; transition: background 0.2s; }
+.btn-save:hover { background: var(--teal-dark); }
+
+.complete-screen { text-align: center; padding: 4rem 2rem; }
+.complete-icon { font-size: 3rem; margin-bottom: 1.5rem; }
+.complete-title { font-family: 'Bebas Neue', sans-serif; font-size: 4rem; letter-spacing: 0.06em; color: var(--teal); }
+.complete-sub { font-size: 1.15rem; color: var(--foam); margin-top: 1rem; line-height: 1.6; max-width: 500px; margin-left: auto; margin-right: auto; }
+.complete-steps { max-width: 500px; margin: 2.5rem auto 0; text-align: left; }
+.complete-step { display: flex; gap: 1rem; padding: 1rem; border-bottom: 1px solid rgba(45,125,210,0.1); }
+.complete-step-num { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--water); flex-shrink: 0; line-height: 1; }
+.complete-step-text { font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
+.complete-step-text strong { color: var(--off-white); display: block; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
+
+@media (max-width: 600px) {
+  .row2, .row3 { grid-template-columns: 1fr; }
+  .avail-grid { grid-template-columns: repeat(4, 1fr); }
+  .trip-type-header { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .wrap { padding: 1.5rem 1rem; }
+  .hero { padding: 2rem 1rem 1.5rem; }
+  .progress-bar { padding: 0 1rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+      <svg viewBox="0 0 28 28" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+        <line x1="14" y1="1" x2="14" y2="27" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="1" y1="14" x2="27" y2="14" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="5" y1="5" x2="23" y2="23" stroke="#2d7dd2" stroke-width="0.75" stroke-linecap="round" opacity="0.4"/>
+        <line x1="23" y1="5" x2="5" y2="23" stroke="#2d7dd2" stroke-width="0.75" stroke-linecap="round" opacity="0.4"/>
+        <polygon points="14,1 11,9 14,7 17,9" fill="#2d7dd2"/>
+        <polygon points="14,27 11,19 14,21 17,19" fill="#4a6a8a"/>
+        <polygon points="1,14 9,11 7,14 9,17" fill="#4a6a8a"/>
+        <polygon points="27,14 19,11 21,14 19,17" fill="#4a6a8a"/>
+        <circle cx="14" cy="14" r="3" fill="none" stroke="#2d7dd2" stroke-width="1.5"/>
+        <circle cx="14" cy="14" r="1.2" fill="#2d7dd2"/>
+      </svg>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.12em;color:#f2ede6;">CAPTAIN<span style="color:#2d7dd2;">OS</span></span>
+    </a>
+  <span style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--water);">Dock Desk Setup</span>
+  <a class="nav-back" href="index.html">← Back</a>
+</nav>
+
+<div class="hero">
+  <p class="hero-label">Module 02 · Dock Desk</p>
+  <h1 class="hero-title">SET UP YOUR <span>AI AGENT</span></h1>
+  <p class="hero-sub">Your personal booking assistant — answers calls, checks your calendar, books trips, and texts you a recap while you're on the water.</p>
+</div>
+
+<div class="progress-bar">
+  <div class="steps">
+    <div class="step active" id="step-bar-0"></div>
+    <div class="step" id="step-bar-1"></div>
+    <div class="step" id="step-bar-2"></div>
+    <div class="step" id="step-bar-3"></div>
+    <div class="step" id="step-bar-4"></div>
+    <div class="step" id="step-bar-5"></div>
+  </div>
+  <div class="step-labels">
+    <span class="step-label active" id="step-lbl-0">Your info</span>
+    <span class="step-label" id="step-lbl-1">Trips & pricing</span>
+    <span class="step-label" id="step-lbl-2">FAQ</span>
+    <span class="step-label" id="step-lbl-3">Availability</span>
+    <span class="step-label" id="step-lbl-4">Phone setup</span>
+    <span class="step-label" id="step-lbl-5">Review</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- SECTION 0: YOUR INFO -->
+  <div class="section active" id="section-0">
+    <div class="section-head">
+      <p class="section-num">Step 01 of 06</p>
+      <h2 class="section-title">Your Info</h2>
+      <p class="section-desc">The basics your agent needs to introduce itself and represent you professionally.</p>
+    </div>
+    <div class="card">
+      <p class="card-title">About you</p>
+      <div class="row2">
+        <div class="field"><label>Captain's name</label><input type="text" id="captain-name" placeholder="Captain Mike"/></div>
+        <div class="field"><label>Boat name</label><input type="text" id="boat-name" placeholder="Sea Ranger"/></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Operating area</label><input type="text" id="op-area" placeholder="e.g. Marco Island, Naples, FL"/></div>
+        <div class="field"><label>Home marina / launch</label><input type="text" id="marina" placeholder="e.g. Goodland Marina"/></div>
+      </div>
+      <div class="field"><label>Your cell number (for SMS recaps)</label><input type="tel" id="captain-phone" placeholder="239-555-0000" oninput="formatPhone(this)"/><p class="field-hint">Enter any format — we'll handle the rest. No need to add +1.</p></div>
+      <div class="field"><label>How should the agent greet callers?</label>
+        <textarea id="greeting" rows="3" placeholder="e.g. Thanks for calling Captain Mike's Charters! I'm the booking assistant for Captain Mike. How can I help you today?"></textarea>
+        <p class="field-hint">This is the first thing callers hear. Keep it friendly and natural.</p>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Your specialty</p>
+      <div class="field"><label>What kind of fishing do you specialize in?</label>
+        <textarea id="specialty" rows="2" placeholder="e.g. Inshore and nearshore fishing targeting snook, redfish, and tarpon in the Ten Thousand Islands area."></textarea>
+      </div>
+      <div class="field"><label>Years of experience</label><input type="text" id="experience" placeholder="e.g. 15 years guiding in Southwest Florida"/></div>
+      <div class="field"><label>Max passengers per trip</label><input type="number" id="max-pax" placeholder="4" min="1" max="20"/></div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn-next" onclick="goTo(1)">Next — Trips & Pricing →</button>
+    </div>
+  </div>
+
+  <!-- SECTION 1: TRIPS & PRICING -->
+  <div class="section" id="section-1">
+    <div class="section-head">
+      <p class="section-num">Step 02 of 06</p>
+      <h2 class="section-title">Trips & Pricing</h2>
+      <p class="section-desc">Add the trip types you offer. Your agent will quote these prices and explain what's included.</p>
+    </div>
+    <div id="trip-list"></div>
+    <button class="add-btn" onclick="addTripType()">+ Add trip type</button>
+    <div class="nav-buttons">
+      <button class="btn-back" onclick="goTo(0)">← Back</button>
+      <button class="btn-next" onclick="goTo(2)">Next — FAQ →</button>
+    </div>
+  </div>
+
+  <!-- SECTION 2: FAQ -->
+  <div class="section" id="section-2">
+    <div class="section-head">
+      <p class="section-num">Step 03 of 06</p>
+      <h2 class="section-title">Your FAQ</h2>
+      <p class="section-desc">Fill in your answers to the questions clients ask most. Your agent will use these word for word.</p>
+    </div>
+    <div class="card">
+      <p class="card-title">Standard questions — fill in your answers</p>
+      <div id="faq-standard"></div>
+    </div>
+    <div class="card" style="margin-top:1rem;">
+      <p class="card-title">Custom questions — add your own</p>
+      <div id="faq-custom-list"></div>
+      <button class="add-btn" onclick="addCustomFaq()">+ Add custom question</button>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn-back" onclick="goTo(1)">← Back</button>
+      <button class="btn-next" onclick="goTo(3)">Next — Availability →</button>
+    </div>
+  </div>
+
+  <!-- SECTION 3: AVAILABILITY -->
+  <div class="section" id="section-3">
+    <div class="section-head">
+      <p class="section-num">Step 04 of 06</p>
+      <h2 class="section-title">Availability</h2>
+      <p class="section-desc">Set your typical schedule and connect your calendar so the agent never double-books you.</p>
+    </div>
+    <div class="card">
+      <p class="card-title">Days you typically fish</p>
+      <div class="avail-grid">
+        <button class="day-toggle on" data-day="Mon" onclick="toggleDay(this)">Mon</button>
+        <button class="day-toggle on" data-day="Tue" onclick="toggleDay(this)">Tue</button>
+        <button class="day-toggle on" data-day="Wed" onclick="toggleDay(this)">Wed</button>
+        <button class="day-toggle on" data-day="Thu" onclick="toggleDay(this)">Thu</button>
+        <button class="day-toggle on" data-day="Fri" onclick="toggleDay(this)">Fri</button>
+        <button class="day-toggle on" data-day="Sat" onclick="toggleDay(this)">Sat</button>
+        <button class="day-toggle" data-day="Sun" onclick="toggleDay(this)">Sun</button>
+      </div>
+      <p class="field-hint" style="margin-top:0;">These are your default available days — your calendar will override specific dates.</p>
+    </div>
+    <div class="card">
+      <p class="card-title">Typical trip hours</p>
+      <div class="time-row">
+        <div class="field" style="margin:0;"><label>Earliest start time</label><input type="time" id="time-start" value="06:00"/></div>
+        <div class="time-sep">to</div>
+        <div class="field" style="margin:0;"><label>Latest end time</label><input type="time" id="time-end" value="14:00"/></div>
+      </div>
+      <div class="field">
+        <label>Advance booking required</label>
+        <select id="advance-booking">
+          <option>24 hours notice</option>
+          <option>48 hours notice</option>
+          <option selected>72 hours notice</option>
+          <option>1 week notice</option>
+          <option>No minimum</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Calendar</p>
+      <div style="background:var(--deep);border:1px solid rgba(45,125,210,0.1);padding:1.25rem;">
+        <p style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--water);margin-bottom:0.5rem;">How booking confirmation works</p>
+        <p style="font-size:0.95rem;color:var(--muted);line-height:1.6;">Marina will take the caller's details and requested date, then let them know the captain will confirm within a few hours. You will receive a text recap with everything you need to confirm or reschedule. Google Calendar integration coming soon.</p>
+      </div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn-back" onclick="goTo(2)">← Back</button>
+      <button class="btn-next" onclick="goTo(4)">Next — Phone Setup →</button>
+    </div>
+  </div>
+
+  <!-- SECTION 4: PHONE SETUP -->
+  <div class="section" id="section-4">
+    <div class="section-head">
+      <p class="section-num">Step 05 of 06</p>
+      <h2 class="section-title">Phone Setup</h2>
+      <p class="section-desc">How to forward your existing number to Dock Desk so you never miss a booking.</p>
+    </div>
+    <div class="card">
+      <p class="card-title">Your CaptainOS forwarding number</p>
+      <div style="background:var(--deep);padding:1.25rem;margin-bottom:1rem;border:1px solid rgba(45,125,210,0.2);">
+        <p style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Your dedicated Dock Desk number</p>
+        <p style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:0.1em;color:var(--water);" id="dock-number">Assigned after activation</p>
+        <p class="field-hint" style="margin-top:6px;">Forward your existing number to this when you're on the water.</p>
+      </div>
+      <div class="field"><label>How long should your phone ring before forwarding?</label>
+        <select id="ring-time">
+          <option>2 rings (~10 seconds)</option>
+          <option selected>3 rings (~15 seconds)</option>
+          <option>4 rings (~20 seconds)</option>
+          <option>5 rings (~25 seconds)</option>
+        </select>
+      </div>
+    </div>
+    <div class="phone-setup">
+      <p class="card-title" style="margin-bottom:1.25rem;">How to set up call forwarding</p>
+      <div class="phone-step">
+        <div class="phone-step-num">1</div>
+        <div class="phone-step-content">
+          <p class="phone-step-title">iPhone</p>
+          <p class="phone-step-desc">Go to <code>Settings → Phone → Call Forwarding</code>. Turn it on and enter your Dock Desk number. Or dial <code>*21*[number]#</code> to forward all calls.</p>
+        </div>
+      </div>
+      <div class="phone-step">
+        <div class="phone-step-num">2</div>
+        <div class="phone-step-content">
+          <p class="phone-step-title">Android</p>
+          <p class="phone-step-desc">Go to <code>Phone app → Settings → Call Forwarding</code>. Set "Forward when unanswered" to your Dock Desk number.</p>
+        </div>
+      </div>
+      <div class="phone-step">
+        <div class="phone-step-num">3</div>
+        <div class="phone-step-content">
+          <p class="phone-step-title">Quick toggle for on the water</p>
+          <p class="phone-step-desc">Before you leave the dock, just dial <code>*72[DockDeskNumber]</code> to enable forwarding. When you're back, dial <code>*73</code> to disable it. Takes 5 seconds.</p>
+        </div>
+      </div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn-back" onclick="goTo(3)">← Back</button>
+      <button class="btn-next" onclick="goTo(5)">Next — Review →</button>
+    </div>
+  </div>
+
+  <!-- SECTION 5: REVIEW -->
+  <div class="section" id="section-5">
+    <div class="section-head">
+      <p class="section-num">Step 06 of 06</p>
+      <h2 class="section-title">Review & Activate</h2>
+      <p class="section-desc">Here's how your agent will sound — and what your recap texts will look like.</p>
+    </div>
+
+    <div class="preview-box">
+      <p class="preview-label">Sample call preview</p>
+      <div class="chat-bubble agent">
+        <p class="chat-name">Dock Desk Agent</p>
+        <div id="preview-greeting">Thanks for calling! I'm the booking assistant. How can I help you today?</div>
+      </div>
+      <div class="chat-bubble client">
+        <p class="chat-name">Caller</p>
+        Hi, I'm looking to book a fishing trip for 3 people next Saturday.
+      </div>
+      <div class="chat-bubble agent">
+        <p class="chat-name">Dock Desk Agent</p>
+        <div id="preview-response">Great! Let me check availability for next Saturday for a party of 3...</div>
+      </div>
+    </div>
+
+    <div class="preview-box">
+      <p class="preview-label">SMS recap you'll receive after each call</p>
+      <div class="sms-preview">
+        <p class="sms-header">Dock Desk · New booking inquiry</p>
+        <div class="sms-bubble" id="sms-preview-text">
+          📞 New call — 3:42 PM<br><br>
+          <strong>Caller:</strong> John Smith · (239) 555-1234<br>
+          <strong>Requested:</strong> Half day trip · 3 people<br>
+          <strong>Date:</strong> Saturday May 16<br>
+          <strong>Status:</strong> Tentatively booked — awaiting your confirmation<br>
+          <strong>Deposit:</strong> Requested via Venmo<br><br>
+          Reply CONFIRM or CANCEL to John.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Summary</p>
+      <div id="review-summary"></div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn-back" onclick="goTo(4)">← Back</button>
+      <button class="btn-save" id="activate-btn" onclick="activate()">Activate Dock Desk →</button>
+    </div>
+  </div>
+
+  <!-- COMPLETE -->
+  <div class="section" id="section-complete">
+    <div class="complete-screen">
+      <div class="complete-icon">⚓</div>
+      <h2 class="complete-title">You're Live</h2>
+      <p class="complete-sub">Your Dock Desk agent is configured and ready. Here's what happens next to get it fully activated.</p>
+      <div class="complete-steps">
+        <div class="complete-step">
+          <div class="complete-step-num">1</div>
+          <div class="complete-step-text"><strong>We build your agent</strong>We'll use your setup to configure Marina on our end — usually done same day.</div>
+        </div>
+        <div class="complete-step">
+          <div class="complete-step-num">2</div>
+          <div class="complete-step-text"><strong>You get your number</strong>We'll text your dedicated Dock Desk forwarding number to you within 24 hours.</div>
+        </div>
+        <div class="complete-step">
+          <div class="complete-step-num">3</div>
+          <div class="complete-step-text"><strong>Set up forwarding</strong>Use the instructions from Step 5 to forward your calls before you head out.</div>
+        </div>
+        <div class="complete-step">
+          <div class="complete-step-num">4</div>
+          <div class="complete-step-text"><strong>You're done</strong>Head out fishing. Marina handles the rest and texts you recaps when you're back in range.</div>
+        </div>
+      </div>
+      <div style="margin-top:2rem;">
+        <a href="index.html" style="font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--water);text-decoration:none;border:1px solid rgba(45,125,210,0.3);padding:0.75rem 1.5rem;">← Back to CaptainOS</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let currentStep = 0;
+const totalSteps = 6;
+
+const standardFaqs = [
+  { q: "What species do you target?", ph: "e.g. We primarily target snook, redfish, and tarpon in the backcountry and nearshore waters..." },
+  { q: "What's included in the trip?", ph: "e.g. All rods, reels, tackle, bait, and fishing license are included. I also bring snacks and water..." },
+  { q: "What should clients bring?", ph: "e.g. Sunscreen, polarized sunglasses, a hat, comfortable clothes, and any food or drinks you want..." },
+  { q: "Do you fillet the fish?", ph: "e.g. Yes, I fillet and bag all legal keeper fish at no extra charge..." },
+  { q: "What is your cancellation policy?", ph: "e.g. Full refund if cancelled 48 hours before the trip. Within 48 hours, the deposit is non-refundable..." },
+  { q: "How do you handle bad weather?", ph: "e.g. Safety is my top priority. If conditions are unsafe, we'll reschedule at no charge..." },
+  { q: "Do you provide fishing licenses?", ph: "e.g. Yes, your saltwater fishing license is included in the trip price..." },
+  { q: "How far in advance should I book?", ph: "e.g. I recommend booking at least a week in advance, especially for weekends and holidays..." },
+  { q: "What type of boat do you use?", ph: "e.g. We fish from a 24-foot flats boat, perfect for backcountry and nearshore fishing..." },
+  { q: "Do you accept deposits?", ph: "e.g. Yes, a 50% deposit is required to hold your date. I accept Venmo, Zelle, and credit card..." },
+];
+
+function initFaqs() {
+  const el = document.getElementById('faq-standard');
+  el.innerHTML = standardFaqs.map((f, i) => `
+    <div class="faq-item">
+      <p class="faq-question">${f.q}</p>
+      <textarea rows="2" id="faq-${i}" placeholder="${f.ph}"></textarea>
+    </div>
+  `).join('');
+}
+
+function addCustomFaq() {
+  const el = document.getElementById('faq-custom-list');
+  const div = document.createElement('div');
+  div.className = 'faq-custom';
+  div.innerHTML = `<input type="text" placeholder="Your question..." /><textarea rows="2" placeholder="Your answer..."></textarea>`;
+  el.appendChild(div);
+}
+
+function addTripType(name='', duration='', price='', included='') {
+  const el = document.getElementById('trip-list');
+  const div = document.createElement('div');
+  div.className = 'trip-type';
+  div.innerHTML = `
+    <div class="trip-type-header">
+      <div><label>Trip name</label><input type="text" placeholder="e.g. Half Day Inshore" value="${name}"/></div>
+      <div><label>Duration</label><input type="text" placeholder="e.g. 4 hours" value="${duration}"/></div>
+      <div><label>Price</label><input type="text" placeholder="e.g. $450" value="${price}"/></div>
+      <div style="padding-top:1.2rem;"><button class="remove-btn" onclick="this.closest('.trip-type').remove()">Remove</button></div>
+    </div>
+    <div style="margin-top:10px;">
+      <label style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;">What's included / notes</label>
+      <input type="text" style="width:100%;background:var(--ocean);border:1px solid rgba(45,125,210,0.2);color:var(--off-white);font-family:'DM Mono',monospace;font-size:0.75rem;padding:0.6rem 0.8rem;outline:none;" placeholder="e.g. All tackle, bait, fishing license included. Up to 4 passengers." value="${included}"/>
+    </div>
+  `;
+  el.appendChild(div);
+}
+
+function formatPhone(input) {
+  // Strip everything except digits
+  let digits = input.value.replace(/\D/g, '');
+  // Remove leading 1 if present
+  if (digits.startsWith('1') && digits.length > 10) digits = digits.slice(1);
+  // Format as (XXX) XXX-XXXX for display
+  if (digits.length >= 6) {
+    input.value = '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6,10);
+  } else if (digits.length >= 3) {
+    input.value = '(' + digits.slice(0,3) + ') ' + digits.slice(3);
+  } else {
+    input.value = digits;
+  }
+}
+
+function getE164Phone(rawPhone) {
+  // Convert any format to +1XXXXXXXXXX for Bland.ai/Twilio
+  const digits = rawPhone.replace(/\D/g, '');
+  const ten = digits.startsWith('1') && digits.length === 11 ? digits.slice(1) : digits;
+  return ten.length === 10 ? '+1' + ten : null;
+}
+
+
+
+function goTo(step) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-' + step).classList.add('active');
+  for (let i = 0; i < totalSteps; i++) {
+    const bar = document.getElementById('step-bar-' + i);
+    const lbl = document.getElementById('step-lbl-' + i);
+    bar.className = 'step' + (i < step ? ' done' : i === step ? ' active' : '');
+    lbl.className = 'step-label' + (i < step ? ' done' : i === step ? ' active' : '');
+  }
+  currentStep = step;
+  if (step === 5) renderReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderReview() {
+  const name = document.getElementById('captain-name').value || 'Captain';
+  const boat = document.getElementById('boat-name').value || 'your boat';
+  const greeting = document.getElementById('greeting').value;
+  document.getElementById('preview-greeting').textContent = greeting || `Thanks for calling ${name}'s Charters! How can I help you today?`;
+  document.getElementById('preview-response').textContent = `Great! Let me check availability for that date. ${name} runs trips out of ${document.getElementById('marina').value || 'the local marina'}. A party of 3 would work perfectly — let me pull up the calendar...`;
+
+  const trips = [...document.querySelectorAll('.trip-type')].map(t => {
+    const inputs = t.querySelectorAll('input');
+    return { name: inputs[0].value, duration: inputs[1].value, price: inputs[2].value };
+  });
+
+  document.getElementById('review-summary').innerHTML = `
+    <div style="display:grid;gap:12px;">
+      <div style="display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid rgba(45,125,210,0.1);">
+        <span style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);">Captain</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--off-white);">${name} · ${boat}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid rgba(45,125,210,0.1);">
+        <span style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);">Trip types</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--off-white);">${trips.length} configured</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid rgba(45,125,210,0.1);">
+        <span style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);">FAQ answers</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--off-white);">${[...document.querySelectorAll('#faq-standard textarea')].filter(t=>t.value.trim()).length} of ${standardFaqs.length} filled in</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid rgba(45,125,210,0.1);">
+        <span style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);">Recap texts to</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--off-white);">${document.getElementById('captain-phone').value || 'Not set'}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:0.75rem 0;">
+        <span style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);">Ring before forwarding</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--off-white);">${document.getElementById('ring-time').value}</span>
+      </div>
+    </div>
+  `;
+}
+
+async function activate() {
+  const btn = document.getElementById('activate-btn');
+  btn.textContent = 'Sending setup...';
+  btn.disabled = true;
+
+  const captainName = document.getElementById('captain-name').value;
+  const boatName = document.getElementById('boat-name').value;
+  const opArea = document.getElementById('op-area').value;
+  const marina = document.getElementById('marina').value;
+  const captainPhone = document.getElementById('captain-phone').value;
+  const specialty = document.getElementById('specialty').value;
+  const experience = document.getElementById('experience').value;
+  const maxPax = document.getElementById('max-pax').value;
+  const greeting = document.getElementById('greeting').value;
+
+  const tripLines = [...document.querySelectorAll('.trip-type')].map(t => {
+    const inputs = t.querySelectorAll('input');
+    return `  • ${inputs[0].value} — ${inputs[1].value} — ${inputs[2].value}\n    Included: ${inputs[3]?.value || 'N/A'}`;
+  }).join('\n');
+
+  const faqLines = [...document.querySelectorAll('#faq-standard .faq-item')].map(item => {
+    const q = item.querySelector('.faq-question').textContent.trim();
+    const a = item.querySelector('textarea').value.trim();
+    return a ? `Q: ${q}\nA: ${a}` : null;
+  }).filter(Boolean).join('\n\n');
+
+  const customFaqLines = [...document.querySelectorAll('#faq-custom-list .faq-custom')].map(item => {
+    const q = item.querySelector('input')?.value.trim();
+    const a = item.querySelector('textarea')?.value.trim();
+    return q && a ? `Q: ${q}\nA: ${a}` : null;
+  }).filter(Boolean).join('\n\n');
+
+  const days = [...document.querySelectorAll('.day-toggle.on')].map(d => d.getAttribute('data-day')).join(', ');
+  const timeStart = document.getElementById('time-start').value;
+  const timeEnd = document.getElementById('time-end').value;
+  const advanceBooking = document.getElementById('advance-booking').value;
+  const ringTime = document.getElementById('ring-time').value;
+
+  const agentPrompt = `You are Marina, the AI booking assistant for ${captainName}'s charter fishing operation. You answer calls on their behalf when they are out on the water.
+
+PERSONALITY: Friendly, knowledgeable about fishing, professional but not stiff. Speak like a real person. Keep responses concise and natural.
+
+CAPTAIN INFO:
+- Name: ${captainName}
+- Boat: ${boatName}
+- Area: ${opArea}
+- Marina: ${marina}
+- Specialty: ${specialty}
+- Experience: ${experience}
+- Max passengers: ${maxPax}
+
+GREETING: ${greeting || `Thanks for calling ${captainName}'s Charters! This is Marina, the booking assistant. How can I help you today?`}
+
+TRIP TYPES & PRICING:
+${tripLines}
+
+AVAILABILITY:
+- Days: ${days}
+- Hours: ${timeStart} to ${timeEnd}
+- Advance notice required: ${advanceBooking}
+
+FAQ:
+${faqLines}${customFaqLines ? '\n\n' + customFaqLines : ''}
+
+BOOKING PROCESS:
+1. Find out party size, date, and trip type
+2. Quote the price and what's included
+3. Collect their name and phone number
+4. Tell them the captain will confirm within a few hours and send deposit info
+5. End warmly
+
+RULES:
+- Never guarantee a booking — captain always confirms
+- If you don't know something, say the captain will follow up
+- Stay professional if someone is rude
+- Never mention competitor charters
+- Always end with a warm send-off
+- At end of call: summarize caller name, number, date, trip type, party size, and booking status`;
+
+  const emailBody = `=== NEW DOCK DESK SETUP ===
+
+CAPTAIN: ${captainName}
+BOAT: ${boatName}
+AREA: ${opArea}
+MARINA: ${marina}
+CELL (SMS recaps): ${captainPhone}
+RING BEFORE FORWARD: ${ringTime}
+
+--- TRIP TYPES ---
+${tripLines}
+
+--- AVAILABILITY ---
+Days: ${days}
+Hours: ${timeStart} — ${timeEnd}
+Advance notice: ${advanceBooking}
+
+--- FAQ ANSWERS ---
+${faqLines}${customFaqLines ? '\n\n--- CUSTOM FAQ ---\n' + customFaqLines : ''}
+
+--- BLAND.AI AGENT PROMPT (copy/paste ready) ---
+${agentPrompt}
+
+=== END ===`;
+
+  try {
+    const res = await fetch('https://formspree.io/f/xzdorode', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        subject: `🎣 New Dock Desk Setup — ${captainName}`,
+        captain: captainName,
+        phone: captainPhone,
+        area: opArea,
+        full_setup: emailBody,
+        source: 'Dock Desk Setup Form'
+      })
+    });
+
+    if (!res.ok) throw new Error('Formspree error');
+
+    document.querySelector('.complete-sub').textContent = `Your setup is submitted. We'll have Marina configured and your forwarding number texted to ${captainPhone || 'you'} within 24 hours.`;
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-complete').classList.add('active');
+    document.querySelector('.progress-bar').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch (e) {
+    btn.textContent = 'Submit Setup →';
+    btn.disabled = false;
+    alert('Something went wrong. Please try again or email us at captainoshq@gmail.com');
+  }
+}
+
+initFaqs();
+addTripType('Half Day Inshore', '4 hours', '$450', 'All tackle, bait, and fishing license included. Up to 4 passengers.');
+addTripType('Full Day Inshore', '8 hours', '$750', 'All tackle, bait, and fishing license included. Lunch break included. Up to 4 passengers.');
+
+</script>
+</body>
+</html>
