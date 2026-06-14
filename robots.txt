@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /connect-calendar.html
+
+Sitemap: https://captainos.us/sitemap.xml

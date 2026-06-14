@@ -3,9 +3,82 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CaptainOS — Captain Offshore</title>
-<meta name="description" content="Built on the water. Built for the water. A platform for serious charter guides — and a brand that runs as deep as the tides.">
+<title>CaptainOS — AI Booking Agent & Bite Logger for Charter Guides</title>
+<meta name="description" content="CaptainOS is the AI phone agent and bite logger built for charter fishing guides. Marina answers your calls 24/7, books trips on your calendar, and texts you a recap. Built in Chokoloskee, FL.">
+<meta name="keywords" content="charter fishing software, AI booking agent, fishing guide booking, charter captain CRM, bite logger, fishing log app, Marina AI, charter trip booking">
+<meta name="author" content="CaptainOS · Captain Offshore">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://captainos.us/">
+<meta name="theme-color" content="#0a1628">
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/favicon.svg">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CaptainOS">
+<meta property="og:url" content="https://captainos.us/">
+<meta property="og:title" content="CaptainOS — AI Booking Agent & Bite Logger for Charter Guides">
+<meta property="og:description" content="Marina, your AI assistant, answers calls 24/7, books trips on your calendar, and texts you a recap. Never miss a booking again.">
+<meta property="og:image" content="https://captainos.us/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="CaptainOS — Built for the water. AI booking agent and bite logger for charter guides.">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="CaptainOS — AI Booking Agent & Bite Logger for Charter Guides">
+<meta name="twitter:description" content="Marina, your AI assistant, answers calls 24/7, books trips on your calendar, and texts you a recap. Never miss a booking again.">
+<meta name="twitter:image" content="https://captainos.us/og-image.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://captainos.us/#organization",
+      "name": "CaptainOS",
+      "alternateName": "Captain Offshore",
+      "url": "https://captainos.us/",
+      "logo": "https://captainos.us/og-image.png",
+      "email": "hello@captainos.us",
+      "description": "AI booking agent and bite logger built for charter fishing guides.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Chokoloskee",
+        "addressRegion": "FL",
+        "addressCountry": "US"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://captainos.us/#website",
+      "url": "https://captainos.us/",
+      "name": "CaptainOS",
+      "publisher": { "@id": "https://captainos.us/#organization" }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "CaptainOS",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web, iOS, Android",
+      "description": "CaptainOS gives charter fishing guides an AI phone agent (Marina) that answers calls 24/7, checks your Google Calendar, books trips, and texts you a recap — plus a bite logger that learns your water.",
+      "offers": {
+        "@type": "Offer",
+        "price": "29.00",
+        "priceCurrency": "USD",
+        "description": "Founder's Rate — $29/month, locked in for life.",
+        "url": "https://captainos.us/#pricing"
+      },
+      "publisher": { "@id": "https://captainos.us/#organization" }
+    }
+  ]
+}
+</script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -115,17 +188,6 @@ section { padding: 6rem 2.5rem; }
 .price-btn.outline:hover { border-color: var(--off-white); color: var(--off-white); }
 .price-spots { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; color: var(--sand); text-align: center; margin-top: 0.75rem; text-transform: uppercase; }
 .price-note { max-width: 600px; margin: 2rem auto 0; text-align: center; font-size: 1rem; color: var(--muted); font-style: italic; line-height: 1.6; }
-.apparel { background: var(--deep); }
-.apparel-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 5rem; align-items: start; }
-.apparel-badge { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rust); border: 1px solid rgba(196,98,45,0.4); padding: 0.3rem 0.8rem; margin-bottom: 1.5rem; }
-.apparel-items { display: flex; flex-direction: column; gap: 1px; margin-top: 2rem; }
-.apparel-item { background: var(--ocean); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s; }
-.apparel-item:hover { background: var(--tide); }
-.apparel-item-name { font-size: 1.1rem; font-style: italic; color: var(--off-white); }
-.apparel-item-tag { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; }
-.apparel-origin { margin-top: 2rem; padding: 1.5rem; border: 1px solid rgba(196,98,45,0.2); background: rgba(196,98,45,0.04); }
-.apparel-origin p { font-size: 1rem; color: var(--sand); line-height: 1.6; font-style: italic; }
-.apparel-origin cite { display: block; margin-top: 0.75rem; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; font-style: normal; }
 .early-access { background: var(--ocean); border-top: 1px solid rgba(45,125,210,0.2); border-bottom: 1px solid rgba(45,125,210,0.2); text-align: center; }
 .early-access-inner { max-width: 600px; margin: 0 auto; }
 .access-form { display: flex; gap: 0; margin-top: 2.5rem; max-width: 480px; margin-left: auto; margin-right: auto; }
@@ -140,11 +202,14 @@ section { padding: 6rem 2.5rem; }
 footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(45,125,210,0.1); }
 .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.12em; color: var(--muted); }
 .footer-logo span { color: var(--water); }
+.footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+.footer-links a { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--off-white); }
 .footer-text { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: rgba(138,155,176,0.4); text-transform: uppercase; text-align: right; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 640px) {
   nav { padding: 1rem 1.25rem; } .nav-links { display: none; } .hero { padding: 7rem 1.25rem 3rem; }
-  section { padding: 4rem 1.25rem; } .about-inner, .apparel-inner, .dockdesk-grid, .pricing-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  section { padding: 4rem 1.25rem; } .about-inner, .dockdesk-grid, .pricing-grid { grid-template-columns: 1fr; gap: 2.5rem; }
   .modules-grid { grid-template-columns: 1fr; } .access-form { flex-direction: column; }
   .access-input { border-right: 1px solid rgba(45,125,210,0.3); border-bottom: none; }
   footer { flex-direction: column; gap: 1rem; text-align: center; } .footer-text { text-align: center; } .hero-coords { display: none; }
@@ -173,7 +238,6 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
     <a href="#platform">Platform</a>
     <a href="#dockdesk">Dock Desk</a>
     <a href="#pricing">Pricing</a>
-    <a href="#apparel">Outfitter</a>
   </div>
   <a class="nav-cta" href="#pricing">Get Early Access</a>
 </nav>
@@ -300,10 +364,10 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
   <div class="pricing-inner">
     <p class="section-label">Pricing</p>
     <h2 class="section-title">Get in early.<br>Lock it in forever.</h2>
-    <p class="section-body">First 15 guides get the founder's rate — locked in permanently as long as you stay subscribed. No contracts, cancel anytime.</p>
+    <p class="section-body">First 5 guides get the founder's rate — locked in permanently as long as you stay subscribed. No contracts, cancel anytime.</p>
     <div class="pricing-grid">
       <div class="price-card featured">
-        <div class="founder-banner">🔥 Founder's Rate — Only 15 Spots</div>
+        <div class="founder-banner">🔥 Founder's Rate — Only 5 Spots</div>
         <p class="price-tier">Founder's Rate</p>
         <div class="price-amount"><span>$</span>29<sub>/mo</sub></div>
         <p class="price-lock">🔒 Locked in for life · Never goes up</p>
@@ -321,7 +385,7 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
       </div>
       <div class="price-card">
         <p class="price-tier">Regular Rate</p>
-        <div class="price-amount"><span>$</span>49<sub>/mo</sub></div>
+        <div class="price-amount"><span>$</span>69<sub>/mo</sub></div>
         <p style="font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted);margin-top:0.5rem;">After founder's spots are filled</p>
         <ul class="price-features">
           <li>Bite Logger — unlimited trips</li>
@@ -335,32 +399,6 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
       </div>
     </div>
     <p class="price-note">A single booking Marina captures pays for 6 months of the subscription. The math is pretty simple.</p>
-  </div>
-</section>
-
-<section class="apparel" id="apparel">
-  <div class="apparel-inner">
-    <div>
-      <p class="section-label">The brand</p>
-      <span class="apparel-badge">Captain Offshore Outfitter</span>
-      <h2 class="section-title">Gear that<br>earns it</h2>
-      <p class="section-body">CaptainOS isn't just software. It's a mark. Worn by the guides who were out before sunrise and back after dark. Built offshore. Born in Chokoloskee.</p>
-      <div class="apparel-origin">
-        <p>"This isn't a brand invented in a boardroom. It comes from the Ten Thousand Islands, where the fishing is real and the water doesn't care about your excuses."</p>
-        <cite>— Chokoloskee, FL · Gulf Coast</cite>
-      </div>
-    </div>
-    <div>
-      <p class="section-label" style="margin-bottom:1.5rem;">Coming soon</p>
-      <div class="apparel-items">
-        <div class="apparel-item"><span class="apparel-item-name">Performance fishing shirts</span><span class="apparel-item-tag">UPF 50+</span></div>
-        <div class="apparel-item"><span class="apparel-item-name">Offshore hats & caps</span><span class="apparel-item-tag">Salt-tested</span></div>
-        <div class="apparel-item"><span class="apparel-item-name">Deck shorts & gear bags</span><span class="apparel-item-tag">Built tough</span></div>
-        <div class="apparel-item"><span class="apparel-item-name">Guide-edition drybags</span><span class="apparel-item-tag">Waterproof</span></div>
-        <div class="apparel-item"><span class="apparel-item-name">Stickers, flags & decals</span><span class="apparel-item-tag">Represent</span></div>
-      </div>
-      <p style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--muted);margin-top:1rem;text-transform:uppercase;">Join the early access list to be first for gear drops.</p>
-    </div>
   </div>
 </section>
 
@@ -392,7 +430,15 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
       </svg>
       <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.12em;color:#8a9bb0;">CAPTAIN<span style="color:#2d7dd2;">OS</span></span>
     </div>
-  <div class="footer-text">Captain Offshore · Chokoloskee, FL<br>captainos.us · All rights reserved</div>
+  <div class="footer-links">
+    <a href="#platform">Platform</a>
+    <a href="#pricing">Pricing</a>
+    <a href="bitelogger.html">Bite Logger</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="mailto:hello@captainos.us">Contact</a>
+  </div>
+  <div class="footer-text">Captain Offshore · Chokoloskee, FL<br>© 2026 CaptainOS · All rights reserved</div>
 </footer>
 
 </body>
