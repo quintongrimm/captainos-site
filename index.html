@@ -112,6 +112,9 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; a
 .btn-primary:hover { background: var(--foam); transform: translateY(-1px); }
 .btn-secondary { font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); background: transparent; border: 1px solid rgba(138,155,176,0.3); padding: 1rem 2.2rem; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
 .btn-secondary:hover { color: var(--off-white); border-color: var(--off-white); }
+.hero-call { background: var(--teal); color: #fff; }
+.hero-call:hover { background: var(--teal-dark); }
+.hero-demo-note { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.12em; color: rgba(29,158,117,0.85); text-transform: uppercase; margin-top: 1rem; opacity: 0; animation: fadeUp 0.8s ease forwards 0.9s; }
 .hero-origin { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(45,125,210,0.15); font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; color: rgba(138,155,176,0.5); text-transform: uppercase; opacity: 0; animation: fadeUp 0.8s ease forwards 1s; }
 .hero-origin span { color: rgba(196,98,45,0.7); }
 section { padding: 6rem 2.5rem; }
@@ -239,7 +242,7 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
     <a href="#dockdesk">Dock Desk</a>
     <a href="#pricing">Pricing</a>
   </div>
-  <a class="nav-cta" href="#pricing">Get Early Access</a>
+  <a class="nav-cta" href="#pricing" data-track="nav_early_access">Get Early Access</a>
 </nav>
 
 <section class="hero">
@@ -247,13 +250,14 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
   <div class="hero-grid"></div>
   <div class="hero-coords">25°51'N 81°22'W<br>CHOKOLOSKEE, FL<br>TEN THOUSAND ISLANDS</div>
   <div class="hero-content">
-    <p class="hero-eyebrow">Captain Offshore · Est. Chokoloskee, FL</p>
-    <h1 class="hero-title">CAPTAIN<span class="os">OS</span><span class="line2">Captain Offshore</span></h1>
-    <p class="hero-sub">Built on the water. Built for the water. A platform for <em>serious charter guides</em> — and a brand that runs as deep as the tides.</p>
+    <p class="hero-eyebrow">AI Booking Agent · Built in Chokoloskee, FL</p>
+    <h1 class="hero-title">CAPTAIN<span class="os">OS</span><span class="line2">Never miss a booking again</span></h1>
+    <p class="hero-sub">While you're offshore with no signal, <em>Marina</em> — your AI first mate — answers the phone, quotes your prices, checks your calendar, and books the trip. Then texts you a recap. Every missed call is an $800 trip. Marina catches them all.</p>
     <div class="hero-actions">
-      <a class="btn-primary" href="#pricing">Get the Founder's Rate →</a>
-      <a class="btn-secondary" href="#platform">See the Platform</a>
+      <a class="btn-primary hero-call" href="tel:+12394992899" data-track="hero_hear_marina">📞 Hear Marina — Call the Live Demo</a>
+      <a class="btn-secondary" href="#pricing" data-track="hero_founder_rate">Get the Founder's Rate →</a>
     </div>
+    <p class="hero-demo-note">Real AI · Call from your cell and book a trip like a client would</p>
     <p class="hero-origin">Built out of <span>Chokoloskee, FL</span> · Ten Thousand Islands · Gulf Coast</p>
   </div>
 </section>
@@ -290,7 +294,7 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
           <li>Species counts & sizes</li>
           <li>Private — your data, your edge</li>
         </ul>
-        <a class="module-try" href="bitelogger.html">Try it now →</a>
+        <a class="module-try" href="bitelogger.html" data-track="bitelogger_try">Try it now →</a>
       </div>
       <div class="module-card">
         <div class="module-number">MODULE 02 · LIVE NOW</div>
@@ -341,7 +345,10 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
           <div class="dockdesk-feature-icon">📱</div>
           <div><p class="dockdesk-feature-title">Texts you a recap</p><p class="dockdesk-feature-desc">Every call ends with a summary texted to your phone — caller name, number, trip details, and booking status. Read it when you get signal.</p></div>
         </div>
-        <a class="module-try-teal" href="https://buy.stripe.com/9B6cMYezGh2H0ut1Xo2ZO01" style="margin-top:0.5rem;">Set up Dock Desk →</a>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.5rem;">
+          <a class="module-try-teal hero-call" href="tel:+12394992899" data-track="dockdesk_hear_marina" style="margin-top:0;">📞 Hear Marina — Call the Demo</a>
+          <a class="module-try-teal" href="https://buy.stripe.com/9B6cMYezGh2H0ut1Xo2ZO01" data-track="dockdesk_setup" style="margin-top:0;">Set up Dock Desk →</a>
+        </div>
       </div>
       <div class="phone-mockup">
         <div class="call-header">
@@ -380,7 +387,7 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
           <li>All future modules included</li>
           <li>Direct line to the founder</li>
         </ul>
-        <a class="price-btn" href="https://buy.stripe.com/9B6cMYezGh2H0ut1Xo2ZO01">Claim Founder's Rate →</a>
+        <a class="price-btn" href="https://buy.stripe.com/9B6cMYezGh2H0ut1Xo2ZO01" data-track="pricing_founder_claim">Claim Founder's Rate →</a>
         <p class="price-spots">⚠ Limited spots available</p>
       </div>
       <div class="price-card">
@@ -395,7 +402,7 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
           <li>SMS recap after every call</li>
           <li>All future modules included</li>
         </ul>
-        <a class="price-btn outline" href="https://buy.stripe.com/9B6cMYezGh2H0ut1Xo2ZO01">Join the Waitlist</a>
+        <a class="price-btn outline" href="https://buy.stripe.com/9B6cMYezGh2H0ut1Xo2ZO01" data-track="pricing_waitlist">Join the Waitlist</a>
       </div>
     </div>
     <p class="price-note">A single booking Marina captures pays for 6 months of the subscription. The math is pretty simple.</p>
@@ -408,7 +415,7 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
     <h2 class="section-title">Claim your<br>founder's spot</h2>
     <p class="section-body" style="margin:0 auto;text-align:center;">Drop your email and we'll send you everything you need to get set up at $29/month — locked in for life.</p>
     <div style="margin-top:2.5rem;">
-      <a href="https://buy.stripe.com/9B6cMYezGh2H0ut1Xo2ZO01" style="display:inline-block;font-family:'DM Mono',monospace;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;color:#0a1628;background:#1D9E75;padding:1.1rem 3rem;text-decoration:none;transition:background 0.2s;">Claim Your Spot — $29/month →</a>
+      <a href="https://buy.stripe.com/9B6cMYezGh2H0ut1Xo2ZO01" data-track="access_claim_spot" style="display:inline-block;font-family:'DM Mono',monospace;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;color:#0a1628;background:#1D9E75;padding:1.1rem 3rem;text-decoration:none;transition:background 0.2s;">Claim Your Spot — $29/month →</a>
     </div>
     <p style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;color:var(--muted);margin-top:1rem;">Secure checkout via Stripe · Cancel anytime · Rate locked forever</p>
   </div>
@@ -441,5 +448,54 @@ footer { background: var(--deep); padding: 3rem 2.5rem; display: flex; align-ite
   <div class="footer-text">Captain Offshore · Chokoloskee, FL<br>© 2026 CaptainOS · All rights reserved</div>
 </footer>
 
+<script>
+(function () {
+  // Fires into your existing GA4 (gtag) if present; no-ops safely otherwise.
+  function track(name, params) {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, params || {});
+    }
+  }
+
+  // 1) CTA clicks — anything tagged with data-track
+  document.querySelectorAll('[data-track]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var id = el.getAttribute('data-track');
+      var href = el.getAttribute('href') || '';
+      track('cta_click', { cta_id: id, link_url: href });
+      if (href.indexOf('tel:') === 0) track('demo_call_click', { cta_id: id });
+      if (href.indexOf('buy.stripe.com') !== -1) track('checkout_click', { cta_id: id });
+    });
+  });
+
+  // 2) Scroll depth — 25 / 50 / 75 / 100%
+  var marks = [25, 50, 75, 100], fired = {};
+  function onScroll() {
+    var doc = document.documentElement;
+    var scrolled = (doc.scrollTop || document.body.scrollTop);
+    var height = doc.scrollHeight - doc.clientHeight;
+    var pct = height > 0 ? (scrolled / height) * 100 : 0;
+    marks.forEach(function (m) {
+      if (pct >= m && !fired[m]) {
+        fired[m] = true;
+        track('scroll_depth', { percent: m });
+      }
+    });
+    if (fired[100]) window.removeEventListener('scroll', onScroll);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // 3) Engaged-time pings — proves real attention beyond GA's default
+  var seconds = 0;
+  var timer = setInterval(function () {
+    if (document.visibilityState !== 'visible') return;
+    seconds += 15;
+    if (seconds === 30 || seconds === 60 || seconds === 120) {
+      track('time_on_page', { seconds: seconds });
+    }
+    if (seconds >= 120) clearInterval(timer);
+  }, 15000);
+})();
+</script>
 </body>
 </html>
